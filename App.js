@@ -2,9 +2,9 @@ import React, { useState, createContext, useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View, ActivityIndicator } from "react-native";
-import Login from "./screens/login";
-import Signup from "./screens/signup";
-import Home from "./screens/home";
+import Login from "./screens/Login";
+import Signup from "./screens/Signup";
+import Home from "./screens/Home";
 
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
