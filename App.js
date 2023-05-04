@@ -2,10 +2,9 @@ import React, { useState, createContext, useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View, ActivityIndicator } from "react-native";
-import Login from "./screens/Login";
-import Signup from "./screens/Signup";
-import Dashboard from "./screens/Dashboard";
-import Home from "./screens/Home";
+import Login from "./screens/login";
+import Signup from "./screens/signup";
+import Home from "./screens/home";
 
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
@@ -19,11 +18,10 @@ const AuthenticatedUserProvider = ({ children }) => {
   );
 };
 
-function DashboardStack() {
+function HomeStack() {
   return (
     <Stack.Navigator defaultScreenOptions={Home}>
       <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="Dashboard" component={Dashboard} />
     </Stack.Navigator>
   );
 }
@@ -55,7 +53,7 @@ function RootNavigator() {
 
   return (
     <NavigationContainer>
-      {user ? <DashboardStack /> : <AuthStack />}
+      {user ? <HomeStack /> : <AuthStack />}
     </NavigationContainer>
   );
 }
