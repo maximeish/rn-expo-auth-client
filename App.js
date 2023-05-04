@@ -1,63 +1,69 @@
-import Authenticate from "./components/Authenticate";
+import React, { useState, createContext, useContext, useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { View, ActivityIndicator } from "react-native";
+import Login from "./screens/Login";
+import Signup from "./screens/Signup";
+import Dashboard from "./screens/Dashboard";
+import Home from "./screens/Home";
 
-export default function App() {
+const Stack = createStackNavigator();
+export const AuthenticatedUserContext = createContext({});
 
-  const [isVisible, setIsVisible] = useState(true);
-  const [logins, setLogins] = useState(["test@gmail.com"]);
-
-  /**
-   * Each callback should return object that contains success and/or error.
-   * @param {Object} data
-   * @returns {{ success: Boolean, error: String }}
-   */
-  const submitAuth = async(data, route) => {
-      const signUpRaw = await fetch(`http://test.com/${route}`, {
-          method: "POST", 
-          body: JSON.stringify(data)
-      });
-      if(signUpRaw.status !== 200) {
-          return {
-              success: false,
-              error: await signUpRaw.text()
-          };
-      }
-      const { emails } = await signUpRaw.json();
-      setLogins(emails);
-      return {
-          success: true
-      };
-  };
-
-  const submitSignIn = async (data) => await submitAuth(data, "signin");
-  const submitSignUp = async (data) => await submitAuth(data, "signup");
-  const submitBioLogin = async (data) => await submitAuth(data, "biologin");
-  const submitPinCodeRequest = async (data) => await submitAuth(data, "reset");
-  const submitNewPassword = async (data) => await submitAuth(data, "doreset");
-
-
-
+const AuthenticatedUserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
   return (
-    <Authenticate
-    visible={isVisible}
-    onLogin={submitSignIn} 
-    onSignUp={submitSignUp}
-    onBioLogin={submitBioLogin}
-    logins={logins}
-    onPinCodeRequest={submitPinCodeRequest}
-    onSubmitNewPassword={submitNewPassword}
-    enableBio={true}
->
-    <Text>Challenge</Text>
+    <AuthenticatedUserContext.Provider value={{ user, setUser }}>
+      {children}
+    </AuthenticatedUserContext.Provider>
+  );
+};
 
-</Authenticate>
+function DashboardStack() {
+  return (
+    <Stack.Navigator defaultScreenOptions={Home}>
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Dashboard" component={Dashboard} />
+    </Stack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Signup" component={Signup} />
+    </Stack.Navigator>
+  );
+}
+
+function RootNavigator() {
+  const { user, setUser } = useContext(AuthenticatedUserContext);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("user updated", user);
+  }, [user]);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {user ? <DashboardStack /> : <AuthStack />}
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthenticatedUserProvider>
+      <RootNavigator />
+    </AuthenticatedUserProvider>
+  );
+}
