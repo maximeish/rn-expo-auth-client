@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { AuthenticatedUserContext } from "../App";
+import axios from "axios";
 
 export default function Signup({ navigation }) {
   const { user, setUser } = useContext(AuthenticatedUserContext);
@@ -33,7 +34,21 @@ export default function Signup({ navigation }) {
           pwd: "",
           cpwd: "",
         }}
-        onSubmit={(values) => setUser({ email: values.email })}
+        onSubmit={async (values) => {
+          await axios
+            .post("http://localhost:8080/api/users", {
+              first_name: values.fn,
+              last_name: values.ln,
+              password: values.pwd,
+              email: values.email,
+            })
+            .then((r) => {
+              console.log("Sign up successful", r.data);
+              navigation.navigate("Login");
+            })
+            .catch((err) => console.log(err));
+          // setUser({ email: values.email });
+        }}
         validationSchema={yup.object().shape({
           fn: yup.string().min(2).required("First name is required"),
           ln: yup.string().min(2).required("Last name is required"),
@@ -41,10 +56,10 @@ export default function Signup({ navigation }) {
             .string()
             .email("Email must be valid")
             .required("Email is required"),
-          pwd: yup.string().min(6).required("Password is required"),
+          pwd: yup.string().min(8).required("Password is required"),
           cpwd: yup
             .string()
-            .min(6)
+            .min(8)
             .required("Confirm password is required")
             .test("passwords-match", "Passwords must match", function (p) {
               return this.parent.pwd === p;

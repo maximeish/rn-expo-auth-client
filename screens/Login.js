@@ -18,18 +18,13 @@ import { validateLogin } from "../lib/util";
 import { AuthenticatedUserContext } from "../App";
 import { Formik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
 const backImage = require("../assets/backImage2.jpg");
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { user, setUser } = useContext(AuthenticatedUserContext);
-
-  const onHandleLogin = () => {
-    const valid = validateLogin(email, password);
-    setUser({ fn: "test" });
-    console.log(user);
-  };
 
   return (
     <View style={styles.container}>
@@ -40,13 +35,24 @@ export default function Login({ navigation }) {
           email: "",
           password: "",
         }}
-        onSubmit={(values) => setUser({ email: values.email })}
+        onSubmit={async (values) => {
+          await axios
+            .post("http://localhost:8080/api/users/login", {
+              email: values.email,
+              password: values.password,
+            })
+            .then((r) => {
+              console.log("Sign in successful", r.data);
+              setUser({ token: r.data.token, email: values.email });
+            })
+            .catch((err) => console.log(err));
+        }}
         validationSchema={yup.object().shape({
           email: yup
             .string()
             .email("Email must be valid")
             .required("Email is required"),
-          password: yup.string().min(6).required("Password is required"),
+          password: yup.string().min(8).required("Password is required"),
         })}
       >
         {({

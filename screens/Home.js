@@ -21,10 +21,11 @@ import { AntDesign } from "@expo/vector-icons";
 import { AuthenticatedUserContext } from "../App";
 import { Formik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
 
 const Home = () => {
   const navigation = useNavigation();
-  const { setUser } = useContext(AuthenticatedUserContext);
+  const { user, setUser } = useContext(AuthenticatedUserContext);
 
   useEffect(() => {
     navigation.setOptions({
@@ -48,19 +49,29 @@ const Home = () => {
           pwd: "",
           cpwd: "",
         }}
-        onSubmit={(values) => {
+        onSubmit={async (values) => {
           if (values.email.length !== 0 || values.pwd.length !== 0) {
-            setUser({ email: values.email });
+            await axios
+              .post("http://localhost:8080/api/users/update", {
+                email: user.email,
+                emailUpdate: values.email,
+                password: values.pwd,
+              })
+              .then((r) => {
+                console.log("Update successful", r.data);
+                setUser(null);
+              })
+              .catch((err) => console.log(err));
           } else {
             console.log("At least one field needs to be updated");
           }
         }}
         validationSchema={yup.object().shape({
           email: yup.string().email(),
-          pwd: yup.string().min(6),
+          pwd: yup.string().min(8),
           cpwd: yup
             .string()
-            .min(6)
+            .min(8)
             .test("passwords-match", "Passwords must match", function (p) {
               return this.parent.pwd === p;
             }),
