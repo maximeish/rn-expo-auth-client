@@ -46,7 +46,7 @@ export default function Login({ navigation }) {
             .string()
             .email("Email must be valid")
             .required("Email is required"),
-          password: yup.string().required("Password is required"),
+          password: yup.string().min(6).required("Password is required"),
         })}
       >
         {({
@@ -81,7 +81,6 @@ export default function Login({ navigation }) {
                 {errors.password}
               </Text>
             )}
-
             <TextInput
               style={styles.input}
               placeholder="Enter password"

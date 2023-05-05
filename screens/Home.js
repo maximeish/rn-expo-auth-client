@@ -45,12 +45,25 @@ const Home = () => {
       <Formik
         initialValues={{
           email: "",
-          password: "",
+          pwd: "",
+          cpwd: "",
         }}
-        onSubmit={(values) => setUser({ email: values.email })}
+        onSubmit={(values) => {
+          if (values.email.length !== 0 || values.pwd.length !== 0) {
+            setUser({ email: values.email });
+          } else {
+            console.log("At least one field needs to be updated");
+          }
+        }}
         validationSchema={yup.object().shape({
           email: yup.string().email(),
-          password: yup.string(),
+          pwd: yup.string().min(6),
+          cpwd: yup
+            .string()
+            .min(6)
+            .test("passwords-match", "Passwords must match", function (p) {
+              return this.parent.pwd === p;
+            }),
         })}
       >
         {({
@@ -64,9 +77,14 @@ const Home = () => {
         }) => (
           <SafeAreaView style={styles.form}>
             <Text style={styles.title}>Welcome</Text>
+            {touched.email && errors.email && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.email}
+              </Text>
+            )}
             <TextInput
               style={styles.input}
-              placeholder="Enter email"
+              placeholder="Update email"
               autoCapitalize="none"
               keyboardType="email-address"
               textContentType="emailAddress"
@@ -75,16 +93,38 @@ const Home = () => {
               onChangeText={handleChange("email")}
               onBlur={() => setFieldTouched("email")}
             />
+            {touched.pwd && errors.pwd && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.pwd}
+              </Text>
+            )}
             <TextInput
               style={styles.input}
-              placeholder="Enter password"
+              placeholder="Update password"
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry={true}
               textContentType="password"
-              value={values.password}
-              onChangeText={handleChange("password")}
-              onBlur={() => setFieldTouched("password")}
+              value={values.pwd}
+              onChangeText={handleChange("pwd")}
+              onBlur={() => setFieldTouched("pwd")}
+            />
+
+            {touched.cpwd && errors.cpwd && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.cpwd}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm Password"
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              textContentType="password"
+              value={values.cpwd}
+              onChangeText={handleChange("cpwd")}
+              onBlur={() => setFieldTouched("cpwd")}
             />
 
             <TouchableOpacity

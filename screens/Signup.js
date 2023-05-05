@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -14,105 +14,175 @@ import {
 import { Divider } from "@rneui/themed";
 const backImage = require("../assets/backImage.jpeg");
 import { Ionicons } from "@expo/vector-icons";
+import { Formik } from "formik";
+import * as yup from "yup";
+import { AuthenticatedUserContext } from "../App";
 
 export default function Signup({ navigation }) {
-  const [fn, setFn] = useState("");
-  const [ln, setLn] = useState("");
-  const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
-  const [cpwd, setCpwd] = useState("");
-
-  const onHandleSignup = () => {};
+  const { user, setUser } = useContext(AuthenticatedUserContext);
 
   return (
     <View style={styles.container}>
       <Image source={backImage} style={styles.backImage} />
       <View style={styles.whiteSheet} />
-      <SafeAreaView style={styles.form}>
-        {/* <Text style={styles.title}>Sign Up</Text> */}
-        <TextInput
-          style={styles.input}
-          placeholder="First Name"
-          autoCapitalize="words"
-          keyboardType="default"
-          textContentType="username"
-          autoFocus={true}
-          value={fn}
-          onChangeText={(text) => setFn(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          autoCapitalize="words"
-          keyboardType="default"
-          textContentType="username"
-          autoFocus={true}
-          value={ln}
-          onChangeText={(text) => setLn(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          textContentType="emailAddress"
-          autoFocus={true}
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry={true}
-          textContentType="password"
-          value={pwd}
-          onChangeText={(text) => setPwd(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry={true}
-          textContentType="password"
-          value={cpwd}
-          onChangeText={(text) => setCpwd(text)}
-        />
-        <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
-          <Text style={{ fontWeight: "bold", color: "#fff", fontSize: 18 }}>
-            {" "}
-            Sign Up
-          </Text>
-        </TouchableOpacity>
-        <View
-          style={{
-            marginTop: 20,
-            flexDirection: "row",
-            alignItems: "center",
-            alignSelf: "center",
-          }}
-        >
-          <Text style={{ color: "gray", fontWeight: "600", fontSize: 14 }}>
-            Already have an account?{" "}
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={{ color: "#576CBC", fontWeight: "600", fontSize: 14 }}>
-              Log In
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.separator}>
-          <Divider insetType="middle" />
-          <Text>or sign up with</Text>
-          <Divider inset={true} insetType="middle" />
-        </View>
-        <View style={styles.socialIcons}>
-          <Ionicons name="logo-apple" size={48} color="black" />
-          <Ionicons name="logo-google" size={40} color="black" />
-        </View>
-      </SafeAreaView>
+      <Formik
+        initialValues={{
+          fn: "",
+          ln: "",
+          email: "",
+          pwd: "",
+          cpwd: "",
+        }}
+        onSubmit={(values) => setUser({ email: values.email })}
+        validationSchema={yup.object().shape({
+          fn: yup.string().min(2).required("First name is required"),
+          ln: yup.string().min(2).required("Last name is required"),
+          email: yup
+            .string()
+            .email("Email must be valid")
+            .required("Email is required"),
+          pwd: yup.string().min(6).required("Password is required"),
+          cpwd: yup
+            .string()
+            .min(6)
+            .required("Confirm password is required")
+            .test("passwords-match", "Passwords must match", function (p) {
+              return this.parent.pwd === p;
+            }),
+        })}
+      >
+        {({
+          values,
+          handleChange,
+          errors,
+          setFieldTouched,
+          touched,
+          isValid,
+          handleSubmit,
+        }) => (
+          <SafeAreaView style={styles.form}>
+            {/* <Text style={styles.title}>Sign Up</Text> */}
+            {touched.fn && errors.fn && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.fn}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="First Name"
+              autoCapitalize="words"
+              keyboardType="default"
+              textContentType="username"
+              value={values.fn}
+              onChangeText={handleChange("fn")}
+              onBlur={() => setFieldTouched("fn")}
+            />
+
+            {touched.ln && errors.ln && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.ln}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Last Name"
+              autoCapitalize="words"
+              keyboardType="default"
+              textContentType="username"
+              value={values.ln}
+              onChangeText={handleChange("ln")}
+              onBlur={() => setFieldTouched("ln")}
+            />
+
+            {touched.email && errors.email && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.email}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              textContentType="emailAddress"
+              value={values.email}
+              onChangeText={handleChange("email")}
+              onBlur={() => setFieldTouched("email")}
+            />
+
+            {touched.pwd && errors.pwd && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.pwd}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              textContentType="password"
+              value={values.pwd}
+              onChangeText={handleChange("pwd")}
+              onBlur={() => setFieldTouched("pwd")}
+            />
+
+            {touched.cpwd && errors.cpwd && (
+              <Text style={{ fontSize: 12, color: "#FF0D10" }}>
+                {errors.cpwd}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm Password"
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              textContentType="password"
+              value={values.cpwd}
+              onChangeText={handleChange("cpwd")}
+              onBlur={() => setFieldTouched("cpwd")}
+            />
+            <TouchableOpacity
+              style={styles.button}
+              disabled={!isValid}
+              onPress={handleSubmit}
+            >
+              <Text style={{ fontWeight: "bold", color: "#fff", fontSize: 18 }}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
+            <View
+              style={{
+                marginTop: 20,
+                flexDirection: "row",
+                alignItems: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Text style={{ color: "gray", fontWeight: "600", fontSize: 14 }}>
+                Already have an account?{" "}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                <Text
+                  style={{ color: "#576CBC", fontWeight: "600", fontSize: 14 }}
+                >
+                  Log In
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.separator}>
+              <Divider insetType="middle" />
+              <Text>or sign up with</Text>
+              <Divider inset={true} insetType="middle" />
+            </View>
+            <View style={styles.socialIcons}>
+              <Ionicons name="logo-apple" size={48} color="black" />
+              <Ionicons name="logo-google" size={40} color="black" />
+            </View>
+          </SafeAreaView>
+        )}
+      </Formik>
       <StatusBar barStyle="light-content" />
     </View>
   );
