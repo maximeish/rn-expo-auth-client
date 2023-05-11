@@ -1,4 +1,4 @@
-# Expo authentication app
+# Authentication app
 Expo app for user authentication
 
 # Table of Contents
