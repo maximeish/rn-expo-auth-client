@@ -16,12 +16,9 @@ const backImage = require("../assets/backImage.jpeg");
 import { Ionicons } from "@expo/vector-icons";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { AuthenticatedUserContext } from "../App";
 import axios from "axios";
 
 export default function Signup({ navigation }) {
-  const { user, setUser } = useContext(AuthenticatedUserContext);
-
   return (
     <View style={styles.container}>
       <Image source={backImage} style={styles.backImage} />

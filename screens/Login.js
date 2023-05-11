@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Divider } from "@rneui/themed";
 import { AntDesign } from "@expo/vector-icons";
 import { validateLogin } from "../lib/util";
-import { AuthenticatedUserContext } from "../App";
+import { AuthUserContext } from "../context/Auth";
 import { Formik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
@@ -24,7 +24,7 @@ const backImage = require("../assets/backImage2.jpg");
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(AuthenticatedUserContext);
+   const { user, setUser } = useContext(AuthUserContext);
 
   return (
     <View style={styles.container}>

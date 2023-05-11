@@ -18,14 +18,14 @@ import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Divider } from "@rneui/themed";
 import { AntDesign } from "@expo/vector-icons";
-import { AuthenticatedUserContext } from "../App";
+import { AuthUserContext } from "../context/Auth";
 import { Formik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
 
 const Home = () => {
   const navigation = useNavigation();
-  const { user, setUser } = useContext(AuthenticatedUserContext);
+  const { user, setUser } = useContext(AuthUserContext);
 
   useEffect(() => {
     navigation.setOptions({

@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/config-plugins": "~6.0.0",
     "@expo/webpack-config": "^18.0.1",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-google-signin/google-signin": "^9.0.2",
@@ -34,5 +35,9 @@
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
-  "private": true
+  "private": true,
+  "resolutions": {
+    "expo-modules-autolinking": "~0.8.1",
+    "@expo/config-plugins": "~6.0.0"
+  }
 }
