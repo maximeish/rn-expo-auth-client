@@ -1,7 +1,7 @@
 # Authentication app
 Expo app for user authentication
 
-# Table of Contents
+# Contents
 - [Features](#features)
 - [Installation](#installation)
 
